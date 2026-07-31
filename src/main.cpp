@@ -1,9 +1,10 @@
 // src/main.cpp
-// EDL-only executable for scalar submodular maximization
-// under a knapsack constraint.
+// Executable for scalar submodular maximization under a knapsack
+// constraint. Supports --alg edl and --alg atkc.
 //
-// Example:
+// Examples:
 // ./ic --graph fb.bin --B_factor 0.01 --alg edl --eps 0.1 --consistency 1 --seed 42 --mc 100 --csv fb_edl.csv
+// ./ic --graph fb.bin --B_factor 0.01 --alg atkc --delta 0.1 --atkc_eps 0.5 --consistency 1 --seed 42 --mc 100 --csv fb_atkc.csv
 
 #include <cstdlib>
 #include <fstream>
@@ -11,12 +12,15 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <algorithm>
+#include <cctype>
 
 #include <sys/resource.h>
 #include <sys/stat.h>
 
 #include "mygraph.h"
 #include "algs/edl.h"
+#include "algs/atkc.h"
 
 static long getPeakRSS_KB() {
     struct rusage r;
@@ -131,9 +135,13 @@ static void print_usage(
         << prog
         << " --graph <graph.bin>"
         << " --B_factor <double>"
-        << " --alg edl"
-        << " [--eps <double>]"
-        << " [--consistency <0|1>]"
+        << " --alg <edl|atkc>"
+        << " [--eps <double>]           (EDL only)\n"
+        << "  [--delta <double>]         (ATKC only, cost-granularity, default 0.1)\n"
+        << "  [--atkc_eps <double>]      (ATKC only, precision, default 0.5)\n"
+        << "  [--chase_cap <uint64>]     (ATKC only, 0 = theoretical N)\n"
+        << "  [--max_scan <uint64>]      (ATKC only, 0 = unlimited)\n"
+        << "  [--consistency <0|1>]"
         << " [--seed <uint64>]"
         << " [--mc <size_t>]"
         << " [--lambda <double>]"
@@ -152,7 +160,12 @@ int main(
     string csv_path;
 
     double B_factor = -1.0;
-    double eps = 0.1;
+    double eps = 0.1;          // used by EDL
+
+    double atkc_delta = 0.1;   // used by ATKC (Algorithm 4, Line 1)
+    double atkc_eps   = 0.5;   // used by ATKC (Algorithm 4, Line 1)
+    std::uint64_t atkc_chase_cap     = 0;  // 0 = theoretical N
+    std::uint64_t atkc_max_scan_iter = 0;  // 0 = unlimited candidate scan
 
     bool compute_consistency = true;
 
@@ -231,6 +244,36 @@ int main(
                 need_next(
                     "--lambda");
         }
+        else if (tok == "--delta") {
+            atkc_delta =
+                std::strtod(
+                    need_next(
+                        "--delta"),
+                    nullptr);
+        }
+        else if (tok == "--atkc_eps") {
+            atkc_eps =
+                std::strtod(
+                    need_next(
+                        "--atkc_eps"),
+                    nullptr);
+        }
+        else if (tok == "--chase_cap") {
+            atkc_chase_cap =
+                std::strtoull(
+                    need_next(
+                        "--chase_cap"),
+                    nullptr,
+                    10);
+        }
+        else if (tok == "--max_scan") {
+            atkc_max_scan_iter =
+                std::strtoull(
+                    need_next(
+                        "--max_scan"),
+                    nullptr,
+                    10);
+        }
         else if (tok == "--csv") {
             csv_path =
                 need_next(
@@ -277,12 +320,34 @@ int main(
         return 1;
     }
 
-    if (algo != "edl" &&
-        algo != "EDL")
-    {
+    // Normalize algo name to lowercase for comparison.
+    string algo_lc = algo;
+    std::transform(
+        algo_lc.begin(),
+        algo_lc.end(),
+        algo_lc.begin(),
+        [](unsigned char c) { return std::tolower(c); });
+
+    const bool is_edl  = (algo_lc == "edl");
+    const bool is_atkc = (algo_lc == "atkc");
+
+    if (!is_edl && !is_atkc) {
         cerr
-            << "Error: this executable only supports EDL.\n";
+            << "Error: unsupported --alg '"
+            << algo
+            << "'. Supported: edl, atkc.\n";
         return 1;
+    }
+
+    if (is_atkc) {
+        if (!(atkc_delta > 0.0 && atkc_delta <= 1.0)) {
+            cerr << "Error: --delta must be in (0,1].\n";
+            return 1;
+        }
+        if (!(atkc_eps > 0.0 && atkc_eps < 1.0)) {
+            cerr << "Error: --atkc_eps must be in (0,1).\n";
+            return 1;
+        }
     }
 
     // Fix the IC Monte-Carlo environment for reproducibility.
@@ -367,7 +432,7 @@ int main(
 
     cout
         << "========================================\n"
-        << "EDL experiment\n"
+        << (is_atkc ? "ATKC experiment\n" : "EDL experiment\n")
         << "========================================\n"
         << "graph                  = "
         << graph_file
@@ -389,10 +454,31 @@ int main(
         << "\n"
         << "B                      = "
         << B
-        << "\n"
-        << "eps                    = "
-        << eps
-        << "\n"
+        << "\n";
+
+    if (is_edl) {
+        cout
+            << "eps                    = "
+            << eps
+            << "\n";
+    }
+    if (is_atkc) {
+        cout
+            << "delta                  = "
+            << atkc_delta
+            << "\n"
+            << "atkc_eps               = "
+            << atkc_eps
+            << "\n"
+            << "chase_cap              = "
+            << atkc_chase_cap
+            << "\n"
+            << "max_scan               = "
+            << atkc_max_scan_iter
+            << "\n";
+    }
+
+    cout
         << "KIC_SEED               = "
         << ic_seed
         << "\n"
@@ -420,37 +506,93 @@ int main(
 
     double consistency_time_sec = 0.0;
 
-    if (compute_consistency) {
-        const algs::EDLConsistencyStats stats =
-            algs::run_EDL_consistency(
-                g,
-                B,
-                eps);
+    // ATKC-specific diagnostics (left at 0 for the EDL branch so the
+    // shared CSV schema stays numeric/parseable regardless of --alg).
+    std::uint64_t atkc_q_param = 0;
+    std::uint64_t atkc_J_param = 0;
+    std::uint64_t atkc_N_param = 0;
+    std::uint64_t atkc_total_lane_restarts = 0;
+    std::uint64_t atkc_total_successful_exchanges = 0;
 
-        res =
-            stats.final_result;
+    if (is_edl) {
+        if (compute_consistency) {
+            const algs::EDLConsistencyStats stats =
+                algs::run_EDL_consistency(
+                    g,
+                    B,
+                    eps);
 
-        C =
-            stats.C;
+            res =
+                stats.final_result;
 
-        cumulative_consistency =
-            stats.cumulative_consistency;
+            C =
+                stats.C;
 
-        initial_changes =
-            stats.initial_changes;
+            cumulative_consistency =
+                stats.cumulative_consistency;
 
-        consistency_queries =
-            stats.total_queries;
+            initial_changes =
+                stats.initial_changes;
 
-        consistency_time_sec =
-            stats.total_time_sec;
+            consistency_queries =
+                stats.total_queries;
+
+            consistency_time_sec =
+                stats.total_time_sec;
+        }
+        else {
+            res =
+                algs::run_EDL(
+                    g,
+                    B,
+                    eps);
+        }
     }
-    else {
-        res =
-            algs::run_EDL(
-                g,
-                B,
-                eps);
+    else if (is_atkc) {
+        algs::ATKCParams params;
+        params.delta = atkc_delta;
+        params.eps   = atkc_eps;
+        params.chase_cap = atkc_chase_cap;
+        params.max_x_scan_per_iter = atkc_max_scan_iter;
+
+        if (compute_consistency) {
+            const algs::ATKCConsistencyStats stats =
+                algs::run_ATKC_consistency(
+                    g,
+                    B,
+                    params);
+
+            res =
+                stats.final_result;
+
+            C =
+                stats.C;
+
+            cumulative_consistency =
+                stats.cumulative_consistency;
+
+            initial_changes =
+                stats.initial_changes;
+
+            consistency_queries =
+                stats.total_queries;
+
+            consistency_time_sec =
+                stats.total_time_sec;
+
+            atkc_q_param = stats.params.q;
+            atkc_J_param = stats.params.J;
+            atkc_N_param = stats.params.used_N;
+            atkc_total_lane_restarts = stats.total_lane_restarts;
+            atkc_total_successful_exchanges = stats.total_successful_exchanges;
+        }
+        else {
+            res =
+                algs::run_ATKC(
+                    g,
+                    B,
+                    params);
+        }
     }
 
     const long peak_after_kb =
@@ -540,6 +682,25 @@ int main(
             << "all-prefix time (s)     = "
             << consistency_time_sec
             << "\n";
+
+        if (is_atkc) {
+            cout
+                << "q (ATKC)                = "
+                << atkc_q_param
+                << "\n"
+                << "J (ATKC, lanes=J+1)     = "
+                << atkc_J_param
+                << "\n"
+                << "N used (ATKC)           = "
+                << atkc_N_param
+                << "\n"
+                << "lane restarts           = "
+                << atkc_total_lane_restarts
+                << "\n"
+                << "successful exchanges    = "
+                << atkc_total_successful_exchanges
+                << "\n";
+        }
     }
 
     if (!csv_path.empty()) {
@@ -550,7 +711,10 @@ int main(
             "f_value,solution_cost,solution_size,"
             "queries,time_sec,mem_mb,"
             "C,cumulative_consistency,initial_changes,"
-            "consistency_queries,consistency_time_sec";
+            "consistency_queries,consistency_time_sec,"
+            "atkc_delta,atkc_eps,atkc_chase_cap,atkc_max_scan,"
+            "atkc_q,atkc_J,atkc_N,"
+            "atkc_lane_restarts,atkc_successful_exchanges";
 
         ostringstream row;
 
@@ -611,7 +775,26 @@ int main(
             << consistency_queries
             << ","
             << setprecision(10)
-            << consistency_time_sec;
+            << consistency_time_sec
+            << ","
+            << setprecision(17)
+            << atkc_delta
+            << ","
+            << atkc_eps
+            << ","
+            << atkc_chase_cap
+            << ","
+            << atkc_max_scan_iter
+            << ","
+            << atkc_q_param
+            << ","
+            << atkc_J_param
+            << ","
+            << atkc_N_param
+            << ","
+            << atkc_total_lane_restarts
+            << ","
+            << atkc_total_successful_exchanges;
 
         append_csv_row(
             csv_path,
