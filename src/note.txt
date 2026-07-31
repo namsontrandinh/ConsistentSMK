@@ -1,0 +1,11 @@
+câu lệnh tạo dataset .bin
+./preproc edges.txt parts.txt output.bin K [undirected(0/1)=1] [randomize_node(0/1)=0] [seed=42]
+
+./preproc src/data/email.txt src/data/email-part.txt email.bin 3 1 1 42
+
+Chạy câu lệnh này đề tạo partition từ file đồ thị danh sách cạnh:
+python3 gen_partition.py facebook.txt 10 42
+
+
+Bộ facebook cho kIC:
+./preprockic edges.txt parts.txt graph_kic.bin K 1 0 42
