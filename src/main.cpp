@@ -5,6 +5,7 @@
 // Examples:
 // ./ic --graph fb.bin --B_factor 0.01 --alg edl --eps 0.1 --consistency 1 --seed 42 --mc 100 --csv fb_edl.csv
 // ./ic --graph fb.bin --B_factor 0.01 --alg atkc --delta 0.1 --atkc_eps 0.5 --consistency 1 --seed 42 --mc 100 --csv fb_atkc.csv
+// ./ic --graph fb.bin --B_abs 80 --alg rkcl --delta 0.1 --consistency 1 --seed 42 --mc 100 --csv fb_rkcl.csv
 
 #include <cstdlib>
 #include <fstream>
@@ -21,6 +22,7 @@
 #include "mygraph.h"
 #include "algs/edl.h"
 #include "algs/atkc.h"
+#include "algs/rkcl_im.h"
 
 static long getPeakRSS_KB() {
     struct rusage r;
@@ -134,13 +136,14 @@ static void print_usage(
         << "  "
         << prog
         << " --graph <graph.bin>"
-        << " --B_factor <double>"
-        << " --alg <edl|atkc>"
+        << " (--B_factor <double> | --B_abs <double>)"
+        << " --alg <edl|atkc|rkcl>"
         << " [--eps <double>]           (EDL only)\n"
-        << "  [--delta <double>]         (ATKC only, cost-granularity, default 0.1)\n"
+        << "  [--delta <double>]         (ATKC/RKCL, cost-granularity; ATKC default 0.1, RKCL default 0 = auto-detect)\n"
         << "  [--atkc_eps <double>]      (ATKC only, precision, default 0.5)\n"
-        << "  [--chase_cap <uint64>]     (ATKC only, 0 = theoretical N)\n"
+        << "  [--chase_cap <uint64>]     (ATKC/RKCL, 0 = theoretical N)\n"
         << "  [--max_scan <uint64>]      (ATKC only, 0 = unlimited)\n"
+        << "  [--active_n <size_t>]      (ATKC/RKCL, 0 = full graph; truncate stream for quick testing)\n"
         << "  [--consistency <0|1>]"
         << " [--seed <uint64>]"
         << " [--mc <size_t>]"
@@ -166,6 +169,13 @@ int main(
     double atkc_eps   = 0.5;   // used by ATKC (Algorithm 4, Line 1)
     std::uint64_t atkc_chase_cap     = 0;  // 0 = theoretical N
     std::uint64_t atkc_max_scan_iter = 0;  // 0 = unlimited candidate scan
+
+    double rkcl_delta = 0.0;   // used by RKCL (Algorithm 2, Line 1). 0 = auto-detect.
+    std::uint64_t rkcl_chase_cap = 0;      // 0 = theoretical N
+    bool rkcl_strict_granularity = true;
+
+    double B_abs = -1.0;       // absolute budget; overrides B_factor*total_cost when > 0.
+    std::size_t active_n_override = 0; // 0 = use full graph (g.n)
 
     bool compute_consistency = true;
 
@@ -250,6 +260,7 @@ int main(
                     need_next(
                         "--delta"),
                     nullptr);
+            rkcl_delta = atkc_delta;
         }
         else if (tok == "--atkc_eps") {
             atkc_eps =
@@ -265,6 +276,23 @@ int main(
                         "--chase_cap"),
                     nullptr,
                     10);
+            rkcl_chase_cap = atkc_chase_cap;
+        }
+        else if (tok == "--B_abs") {
+            B_abs =
+                std::strtod(
+                    need_next(
+                        "--B_abs"),
+                    nullptr);
+        }
+        else if (tok == "--active_n") {
+            active_n_override =
+                static_cast<std::size_t>(
+                    std::strtoull(
+                        need_next(
+                            "--active_n"),
+                        nullptr,
+                        10));
         }
         else if (tok == "--max_scan") {
             atkc_max_scan_iter =
@@ -306,9 +334,9 @@ int main(
         return 1;
     }
 
-    if (!(B_factor > 0.0)) {
+    if (!(B_factor > 0.0) && !(B_abs > 0.0)) {
         cerr
-            << "Error: --B_factor must be > 0.\n";
+            << "Error: either --B_factor or --B_abs must be > 0.\n";
         return 1;
     }
 
@@ -330,12 +358,13 @@ int main(
 
     const bool is_edl  = (algo_lc == "edl");
     const bool is_atkc = (algo_lc == "atkc");
+    const bool is_rkcl = (algo_lc == "rkcl");
 
-    if (!is_edl && !is_atkc) {
+    if (!is_edl && !is_atkc && !is_rkcl) {
         cerr
             << "Error: unsupported --alg '"
             << algo
-            << "'. Supported: edl, atkc.\n";
+            << "'. Supported: edl, atkc, rkcl.\n";
         return 1;
     }
 
@@ -346,6 +375,15 @@ int main(
         }
         if (!(atkc_eps > 0.0 && atkc_eps < 1.0)) {
             cerr << "Error: --atkc_eps must be in (0,1).\n";
+            return 1;
+        }
+    }
+
+    if (is_rkcl) {
+        if (rkcl_delta != 0.0 &&
+            !(rkcl_delta > 0.0 && rkcl_delta <= 1.0))
+        {
+            cerr << "Error: --delta must be in (0,1] (or 0 for auto-detect).\n";
             return 1;
         }
     }
@@ -423,8 +461,9 @@ int main(
     }
 
     const double B =
-        B_factor *
-        total_cost;
+        (B_abs > 0.0)
+            ? B_abs
+            : (B_factor * total_cost);
 
     cout
         << fixed
@@ -432,7 +471,7 @@ int main(
 
     cout
         << "========================================\n"
-        << (is_atkc ? "ATKC experiment\n" : "EDL experiment\n")
+        << (is_atkc ? "ATKC experiment\n" : (is_rkcl ? "RKCL experiment\n" : "EDL experiment\n"))
         << "========================================\n"
         << "graph                  = "
         << graph_file
@@ -445,10 +484,21 @@ int main(
         << "\n"
         << "K                      = "
         << g.K
-        << "\n"
-        << "B_factor               = "
-        << B_factor
-        << "\n"
+        << "\n";
+
+    if (B_abs > 0.0) {
+        cout
+            << "B_abs                  = "
+            << B_abs
+            << "\n";
+    } else {
+        cout
+            << "B_factor               = "
+            << B_factor
+            << "\n";
+    }
+
+    cout
         << "total node cost        = "
         << total_cost
         << "\n"
@@ -475,6 +525,15 @@ int main(
             << "\n"
             << "max_scan               = "
             << atkc_max_scan_iter
+            << "\n";
+    }
+    if (is_rkcl) {
+        cout
+            << "delta (0=auto)         = "
+            << rkcl_delta
+            << "\n"
+            << "chase_cap              = "
+            << rkcl_chase_cap
             << "\n";
     }
 
@@ -506,13 +565,28 @@ int main(
 
     double consistency_time_sec = 0.0;
 
-    // ATKC-specific diagnostics (left at 0 for the EDL branch so the
+    // ATKC-specific diagnostics (left at 0 for other branches so the
     // shared CSV schema stays numeric/parseable regardless of --alg).
     std::uint64_t atkc_q_param = 0;
     std::uint64_t atkc_J_param = 0;
     std::uint64_t atkc_N_param = 0;
     std::uint64_t atkc_total_lane_restarts = 0;
     std::uint64_t atkc_total_successful_exchanges = 0;
+
+    // RKCL-specific diagnostics.
+    double rkcl_delta_used = 0.0;
+    double rkcl_mu_used = 0.0;
+    double rkcl_lambda_used = 0.0;
+    double rkcl_gamma_used = 0.0;
+    std::uint64_t rkcl_q_param = 0;
+    std::uint64_t rkcl_N_param = 0;
+    std::uint64_t rkcl_total_restarts = 0;
+    std::uint64_t rkcl_total_successful_exchanges = 0;
+
+    const std::size_t active_n =
+        (active_n_override > 0)
+            ? active_n_override
+            : g.n;
 
     if (is_edl) {
         if (compute_consistency) {
@@ -557,10 +631,11 @@ int main(
 
         if (compute_consistency) {
             const algs::ATKCConsistencyStats stats =
-                algs::run_ATKC_consistency(
+                algs::run_ATKC_consistency_prefix(
                     g,
                     B,
-                    params);
+                    params,
+                    active_n);
 
             res =
                 stats.final_result;
@@ -588,10 +663,61 @@ int main(
         }
         else {
             res =
-                algs::run_ATKC(
+                algs::run_ATKC_prefix(
                     g,
                     B,
-                    params);
+                    params,
+                    active_n);
+        }
+    }
+    else if (is_rkcl) {
+        algs::RKCLParams params;
+        params.delta = rkcl_delta;
+        params.chase_cap = rkcl_chase_cap;
+        params.strict_granularity = rkcl_strict_granularity;
+
+        if (compute_consistency) {
+            const algs::RKCLConsistencyStats stats =
+                algs::run_RKCL_consistency_prefix(
+                    g,
+                    B,
+                    params,
+                    active_n);
+
+            res =
+                stats.final_result;
+
+            C =
+                stats.C;
+
+            cumulative_consistency =
+                stats.cumulative_consistency;
+
+            initial_changes =
+                stats.initial_changes;
+
+            consistency_queries =
+                stats.total_queries;
+
+            consistency_time_sec =
+                stats.total_time_sec;
+
+            rkcl_delta_used = stats.params.delta;
+            rkcl_mu_used = stats.params.mu;
+            rkcl_lambda_used = stats.params.lambda;
+            rkcl_gamma_used = stats.params.gamma;
+            rkcl_q_param = stats.params.q;
+            rkcl_N_param = stats.params.used_N;
+            rkcl_total_restarts = stats.total_restarts;
+            rkcl_total_successful_exchanges = stats.total_successful_exchanges;
+        }
+        else {
+            res =
+                algs::run_RKCL_prefix(
+                    g,
+                    B,
+                    params,
+                    active_n);
         }
     }
 
@@ -701,12 +827,39 @@ int main(
                 << atkc_total_successful_exchanges
                 << "\n";
         }
+        if (is_rkcl) {
+            cout
+                << "delta used (RKCL)       = "
+                << rkcl_delta_used
+                << "\n"
+                << "mu                      = "
+                << rkcl_mu_used
+                << "\n"
+                << "lambda                  = "
+                << rkcl_lambda_used
+                << "\n"
+                << "gamma (1+delta)         = "
+                << rkcl_gamma_used
+                << "\n"
+                << "q (RKCL)                = "
+                << rkcl_q_param
+                << "\n"
+                << "N used (RKCL)           = "
+                << rkcl_N_param
+                << "\n"
+                << "restarts                = "
+                << rkcl_total_restarts
+                << "\n"
+                << "successful exchanges    = "
+                << rkcl_total_successful_exchanges
+                << "\n";
+        }
     }
 
     if (!csv_path.empty()) {
         const string header =
             "algo,constraint,graph,n,m,K,"
-            "B_factor,total_cost,B,eps,"
+            "B_factor,B_abs,total_cost,B,eps,"
             "ic_seed,ic_mc,ic_lambda,"
             "f_value,solution_cost,solution_size,"
             "queries,time_sec,mem_mb,"
@@ -714,7 +867,10 @@ int main(
             "consistency_queries,consistency_time_sec,"
             "atkc_delta,atkc_eps,atkc_chase_cap,atkc_max_scan,"
             "atkc_q,atkc_J,atkc_N,"
-            "atkc_lane_restarts,atkc_successful_exchanges";
+            "atkc_lane_restarts,atkc_successful_exchanges,"
+            "rkcl_delta_used,rkcl_mu,rkcl_lambda,rkcl_gamma,"
+            "rkcl_q,rkcl_N,rkcl_chase_cap,"
+            "rkcl_restarts,rkcl_successful_exchanges";
 
         ostringstream row;
 
@@ -736,6 +892,8 @@ int main(
             << ","
             << setprecision(17)
             << B_factor
+            << ","
+            << B_abs
             << ","
             << total_cost
             << ","
@@ -794,7 +952,26 @@ int main(
             << ","
             << atkc_total_lane_restarts
             << ","
-            << atkc_total_successful_exchanges;
+            << atkc_total_successful_exchanges
+            << ","
+            << setprecision(17)
+            << rkcl_delta_used
+            << ","
+            << rkcl_mu_used
+            << ","
+            << rkcl_lambda_used
+            << ","
+            << rkcl_gamma_used
+            << ","
+            << rkcl_q_param
+            << ","
+            << rkcl_N_param
+            << ","
+            << rkcl_chase_cap
+            << ","
+            << rkcl_total_restarts
+            << ","
+            << rkcl_total_successful_exchanges;
 
         append_csv_row(
             csv_path,

@@ -49,8 +49,11 @@ using subm::Solution;
 //   granularity assumption valid for the loaded graph.
 //
 // theta:
-//   lambda = 1/delta + theta.
-//   The manuscript's explicit example uses theta = 0.01.
+//   REMOVED. Earlier drafts used lambda = mu + theta with a free
+//   theta; the accepted manuscript fixes this exactly:
+//     mu = 1/delta, lambda = (1+delta)/delta = mu + 1,
+//     gamma = 1 + delta*(lambda-mu) = 1 + delta.
+//   There is no free parameter here anymore.
 //
 // chase_cap == 0:
 //   Use the theoretical N.
@@ -61,7 +64,6 @@ using subm::Solution;
 // -----------------------------------------------------
 struct RKCLParams {
     double delta = 0.0;
-    double theta = 0.01;
     std::uint64_t chase_cap = 0;
     bool strict_granularity = true;
 };
@@ -257,11 +259,6 @@ rkcl_derive_params(
             "RKCL: B must be positive.");
     }
 
-    if (!(p.theta > 0.0)) {
-        throw std::invalid_argument(
-            "RKCL: theta must be positive.");
-    }
-
     const double delta_eff =
         rkcl_effective_delta(
             g,
@@ -312,14 +309,13 @@ rkcl_derive_params(
 
     out.lambda =
         out.mu +
-        p.theta;
+        1.0;
 
-    // gamma = 1 + delta(lambda-mu)
-    //       = 1 + delta*theta.
+    // gamma = 1 + delta*(lambda-mu) = 1 + delta*1 = 1 + delta,
+    // matching Lemma 3 of the accepted manuscript exactly.
     out.gamma =
         1.0 +
-        delta *
-        p.theta;
+        delta;
 
     out.q =
         static_cast<std::uint64_t>(
@@ -847,8 +843,6 @@ run_RKCL_consistency_prefix(
             << B
             << ", delta="
             << user_params.delta
-            << ", theta="
-            << user_params.theta
             << ", chase_cap="
             << user_params.chase_cap;
 
