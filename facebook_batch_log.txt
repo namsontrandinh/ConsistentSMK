@@ -1,0 +1,1010 @@
+
+==========================================
+[1/24] RKCL  graph=fb_cost1020.bin B=50 delta=0.1
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 50.000000
+total node cost        = 60708.930516
+B                      = 50.000000
+delta (0=auto)         = 0.100000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=50, delta=0.1, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 159.685437
+memory used (MB)        = 4.375000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 159.685437
+delta used (RKCL)       = 0.100000
+mu                      = 10.000000
+lambda                  = 11.000000
+gamma (1+delta)         = 1.100000
+q (RKCL)                = 10
+N used (RKCL)           = 25
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=50 delta=0.1 elapsed=159s
+
+==========================================
+[2/24] ATKC  graph=fb_cost1020.bin B=50 delta=0.1
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 50.000000
+total node cost        = 60708.930516
+B                      = 50.000000
+delta                  = 0.100000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=50, delta=0.1, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 3496999
+final-prefix time (s)   = 128.953444
+memory used (MB)        = 4.511719
+C-consistency           = 3
+cumulative consistency  = 38
+initial changes         = 1
+all-prefix queries      = 3496999
+all-prefix time (s)     = 128.953444
+q (ATKC)                = 10
+J (ATKC, lanes=J+1)     = 8
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 8
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=50 delta=0.1 elapsed=129s
+
+==========================================
+[3/24] RKCL  graph=fb_cost1020.bin B=60 delta=0.1
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 60.000000
+total node cost        = 60708.930516
+B                      = 60.000000
+delta (0=auto)         = 0.100000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=60, delta=0.1, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 155.053543
+memory used (MB)        = 4.375000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 155.053543
+delta used (RKCL)       = 0.100000
+mu                      = 10.000000
+lambda                  = 11.000000
+gamma (1+delta)         = 1.100000
+q (RKCL)                = 10
+N used (RKCL)           = 25
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=60 delta=0.1 elapsed=155s
+
+==========================================
+[4/24] ATKC  graph=fb_cost1020.bin B=60 delta=0.1
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 60.000000
+total node cost        = 60708.930516
+B                      = 60.000000
+delta                  = 0.100000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=60, delta=0.1, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 3877190
+final-prefix time (s)   = 148.653053
+memory used (MB)        = 4.515625
+C-consistency           = 4
+cumulative consistency  = 42
+initial changes         = 1
+all-prefix queries      = 3877190
+all-prefix time (s)     = 148.653053
+q (ATKC)                = 10
+J (ATKC, lanes=J+1)     = 8
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 9
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=60 delta=0.1 elapsed=149s
+
+==========================================
+[5/24] RKCL  graph=fb_cost1020.bin B=70 delta=0.1
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 70.000000
+total node cost        = 60708.930516
+B                      = 70.000000
+delta (0=auto)         = 0.100000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=70, delta=0.1, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 146.824998
+memory used (MB)        = 4.375000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 146.824998
+delta used (RKCL)       = 0.100000
+mu                      = 10.000000
+lambda                  = 11.000000
+gamma (1+delta)         = 1.100000
+q (RKCL)                = 10
+N used (RKCL)           = 25
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=70 delta=0.1 elapsed=147s
+
+==========================================
+[6/24] ATKC  graph=fb_cost1020.bin B=70 delta=0.1
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 70.000000
+total node cost        = 60708.930516
+B                      = 70.000000
+delta                  = 0.100000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=70, delta=0.1, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 4118614
+final-prefix time (s)   = 167.795945
+memory used (MB)        = 4.656250
+C-consistency           = 4
+cumulative consistency  = 42
+initial changes         = 1
+all-prefix queries      = 4118614
+all-prefix time (s)     = 167.795945
+q (ATKC)                = 10
+J (ATKC, lanes=J+1)     = 8
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 10
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=70 delta=0.1 elapsed=168s
+
+==========================================
+[7/24] RKCL  graph=fb_cost1020.bin B=80 delta=0.1
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 80.000000
+total node cost        = 60708.930516
+B                      = 80.000000
+delta (0=auto)         = 0.100000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=80, delta=0.1, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 143.107673
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 143.107673
+delta used (RKCL)       = 0.100000
+mu                      = 10.000000
+lambda                  = 11.000000
+gamma (1+delta)         = 1.100000
+q (RKCL)                = 10
+N used (RKCL)           = 25
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=80 delta=0.1 elapsed=143s
+
+==========================================
+[8/24] ATKC  graph=fb_cost1020.bin B=80 delta=0.1
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 80.000000
+total node cost        = 60708.930516
+B                      = 80.000000
+delta                  = 0.100000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=80, delta=0.1, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 4359786
+final-prefix time (s)   = 170.947414
+memory used (MB)        = 4.511719
+C-consistency           = 4
+cumulative consistency  = 46
+initial changes         = 1
+all-prefix queries      = 4359786
+all-prefix time (s)     = 170.947414
+q (ATKC)                = 10
+J (ATKC, lanes=J+1)     = 8
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 11
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=80 delta=0.1 elapsed=171s
+
+==========================================
+[9/24] RKCL  graph=fb_cost1020.bin B=90 delta=0.1
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 90.000000
+total node cost        = 60708.930516
+B                      = 90.000000
+delta (0=auto)         = 0.100000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=90, delta=0.1, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 144.185201
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 144.185201
+delta used (RKCL)       = 0.100000
+mu                      = 10.000000
+lambda                  = 11.000000
+gamma (1+delta)         = 1.100000
+q (RKCL)                = 10
+N used (RKCL)           = 25
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=90 delta=0.1 elapsed=144s
+
+==========================================
+[10/24] ATKC  graph=fb_cost1020.bin B=90 delta=0.1
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 90.000000
+total node cost        = 60708.930516
+B                      = 90.000000
+delta                  = 0.100000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=90, delta=0.1, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 4359780
+final-prefix time (s)   = 167.940488
+memory used (MB)        = 4.503906
+C-consistency           = 4
+cumulative consistency  = 42
+initial changes         = 1
+all-prefix queries      = 4359780
+all-prefix time (s)     = 167.940488
+q (ATKC)                = 10
+J (ATKC, lanes=J+1)     = 8
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 11
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=90 delta=0.1 elapsed=168s
+
+==========================================
+[11/24] RKCL  graph=fb_cost1020.bin B=100 delta=0.1
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 100.000000
+total node cost        = 60708.930516
+B                      = 100.000000
+delta (0=auto)         = 0.100000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=100, delta=0.1, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 144.228406
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 144.228406
+delta used (RKCL)       = 0.100000
+mu                      = 10.000000
+lambda                  = 11.000000
+gamma (1+delta)         = 1.100000
+q (RKCL)                = 10
+N used (RKCL)           = 25
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=100 delta=0.1 elapsed=144s
+
+==========================================
+[12/24] ATKC  graph=fb_cost1020.bin B=100 delta=0.1
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost1020.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 100.000000
+total node cost        = 60708.930516
+B                      = 100.000000
+delta                  = 0.100000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=100, delta=0.1, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 12.030612
+|S|                     = 1
+#calls final prefix     = 4595772
+final-prefix time (s)   = 183.605990
+memory used (MB)        = 4.519531
+C-consistency           = 4
+cumulative consistency  = 42
+initial changes         = 1
+all-prefix queries      = 4595772
+all-prefix time (s)     = 183.605990
+q (ATKC)                = 10
+J (ATKC, lanes=J+1)     = 8
+N used (ATKC)           = 10
+lane restarts           = 1
+successful exchanges    = 11
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=100 delta=0.1 elapsed=183s
+
+==========================================
+[13/24] RKCL  graph=fb_cost5060.bin B=50 delta=0.33
+==========================================
+terminate called after throwing an instance of 'std::invalid_argument'
+  what():  RKCL: no feasible positive-cost element.
+./run_facebook_batch.sh: line 67: 63975 Aborted                 (core dumped) $BIN --graph "$graph" --B_abs "$B" --alg rkcl --delta "$delta" --mc $RKCL_MC --scan_cap $RKCL_SCAN_CAP --consistency 1 --csv "$CSV"
+[RKCL] B=50 delta=0.33 elapsed=0s
+
+==========================================
+[14/24] ATKC  graph=fb_cost5060.bin B=50 delta=0.33
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 50.000000
+total node cost        = 222142.481404
+B                      = 50.000000
+delta                  = 0.330000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=50, delta=0.33, eps=0.5
+f(S)                    = 0.000000
+c(S)                    = 0.000000
+|S|                     = 0
+#calls final prefix     = 1
+final-prefix time (s)   = 0.027136
+memory used (MB)        = 4.378906
+C-consistency           = 0
+cumulative consistency  = 0
+initial changes         = 0
+all-prefix queries      = 1
+all-prefix time (s)     = 0.027136
+q (ATKC)                = 3
+J (ATKC, lanes=J+1)     = 5
+N used (ATKC)           = 10
+lane restarts           = 0
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=50 delta=0.33 elapsed=0s
+
+==========================================
+[15/24] RKCL  graph=fb_cost5060.bin B=60 delta=0.33
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 60.000000
+total node cost        = 222142.481404
+B                      = 60.000000
+delta (0=auto)         = 0.330000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=60, delta=0.33, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 142.676324
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 142.676324
+delta used (RKCL)       = 0.330000
+mu                      = 3.030303
+lambda                  = 4.030303
+gamma (1+delta)         = 1.330000
+q (RKCL)                = 3
+N used (RKCL)           = 4
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=60 delta=0.33 elapsed=143s
+
+==========================================
+[16/24] ATKC  graph=fb_cost5060.bin B=60 delta=0.33
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 60.000000
+total node cost        = 222142.481404
+B                      = 60.000000
+delta                  = 0.330000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=60, delta=0.33, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 1452686
+final-prefix time (s)   = 33.125101
+memory used (MB)        = 4.511719
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 1452686
+all-prefix time (s)     = 33.125101
+q (ATKC)                = 3
+J (ATKC, lanes=J+1)     = 5
+N used (ATKC)           = 10
+lane restarts           = 1
+successful exchanges    = 3
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=60 delta=0.33 elapsed=33s
+
+==========================================
+[17/24] RKCL  graph=fb_cost5060.bin B=70 delta=0.33
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 70.000000
+total node cost        = 222142.481404
+B                      = 70.000000
+delta (0=auto)         = 0.330000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=70, delta=0.33, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 141.587115
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 141.587115
+delta used (RKCL)       = 0.330000
+mu                      = 3.030303
+lambda                  = 4.030303
+gamma (1+delta)         = 1.330000
+q (RKCL)                = 3
+N used (RKCL)           = 4
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=70 delta=0.33 elapsed=142s
+
+==========================================
+[18/24] ATKC  graph=fb_cost5060.bin B=70 delta=0.33
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 70.000000
+total node cost        = 222142.481404
+B                      = 70.000000
+delta                  = 0.330000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=70, delta=0.33, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 1452628
+final-prefix time (s)   = 33.148729
+memory used (MB)        = 4.511719
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 1452628
+all-prefix time (s)     = 33.148729
+q (ATKC)                = 3
+J (ATKC, lanes=J+1)     = 5
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 4
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=70 delta=0.33 elapsed=33s
+
+==========================================
+[19/24] RKCL  graph=fb_cost5060.bin B=80 delta=0.33
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 80.000000
+total node cost        = 222142.481404
+B                      = 80.000000
+delta (0=auto)         = 0.330000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=80, delta=0.33, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 141.416428
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 141.416428
+delta used (RKCL)       = 0.330000
+mu                      = 3.030303
+lambda                  = 4.030303
+gamma (1+delta)         = 1.330000
+q (RKCL)                = 3
+N used (RKCL)           = 4
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=80 delta=0.33 elapsed=142s
+
+==========================================
+[20/24] ATKC  graph=fb_cost5060.bin B=80 delta=0.33
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 80.000000
+total node cost        = 222142.481404
+B                      = 80.000000
+delta                  = 0.330000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=80, delta=0.33, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 1452628
+final-prefix time (s)   = 33.165222
+memory used (MB)        = 4.511719
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 1452628
+all-prefix time (s)     = 33.165222
+q (ATKC)                = 3
+J (ATKC, lanes=J+1)     = 5
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 4
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=80 delta=0.33 elapsed=33s
+
+==========================================
+[21/24] RKCL  graph=fb_cost5060.bin B=90 delta=0.33
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 90.000000
+total node cost        = 222142.481404
+B                      = 90.000000
+delta (0=auto)         = 0.330000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=90, delta=0.33, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 142.318880
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 142.318880
+delta used (RKCL)       = 0.330000
+mu                      = 3.030303
+lambda                  = 4.030303
+gamma (1+delta)         = 1.330000
+q (RKCL)                = 3
+N used (RKCL)           = 4
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=90 delta=0.33 elapsed=142s
+
+==========================================
+[22/24] ATKC  graph=fb_cost5060.bin B=90 delta=0.33
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 90.000000
+total node cost        = 222142.481404
+B                      = 90.000000
+delta                  = 0.330000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=90, delta=0.33, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 1452628
+final-prefix time (s)   = 30.295995
+memory used (MB)        = 4.507812
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 1452628
+all-prefix time (s)     = 30.295995
+q (ATKC)                = 3
+J (ATKC, lanes=J+1)     = 5
+N used (ATKC)           = 10
+lane restarts           = 1
+successful exchanges    = 4
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=90 delta=0.33 elapsed=30s
+
+==========================================
+[23/24] RKCL  graph=fb_cost5060.bin B=100 delta=0.33
+==========================================
+========================================
+RKCL experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 100.000000
+total node cost        = 222142.481404
+B                      = 100.000000
+delta (0=auto)         = 0.330000
+chase_cap              = 0
+KIC_SEED               = 42
+KIC_MC                 = 50
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+RKCL-IM finished.
+constraint              = B=100, delta=0.33, chase_cap=0
+f(S)                    = 215.960000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 204665
+final-prefix time (s)   = 141.401829
+memory used (MB)        = 4.250000
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 204665
+all-prefix time (s)     = 141.401829
+delta used (RKCL)       = 0.330000
+mu                      = 3.030303
+lambda                  = 4.030303
+gamma (1+delta)         = 1.330000
+q (RKCL)                = 3
+N used (RKCL)           = 4
+restarts                = 2
+successful exchanges    = 0
+CSV appended to         = facebook_rkcl_atkc.csv
+[RKCL] B=100 delta=0.33 elapsed=142s
+
+==========================================
+[24/24] ATKC  graph=fb_cost5060.bin B=100 delta=0.33
+==========================================
+========================================
+ATKC experiment
+========================================
+graph                  = fb_cost5060.bin
+n                      = 4039
+m                      = 176468
+K                      = 1
+B_abs                  = 100.000000
+total node cost        = 222142.481404
+B                      = 100.000000
+delta                  = 0.330000
+atkc_eps               = 0.500000
+chase_cap              = 10
+max_scan               = 30
+KIC_SEED               = 42
+KIC_MC                 = 10
+KIC_LAMBDA             = 1.0
+compute consistency    = true
+----------------------------------------
+ATKC finished.
+constraint              = B=100, delta=0.33, eps=0.5
+f(S)                    = 232.700000
+c(S)                    = 50.133779
+|S|                     = 1
+#calls final prefix     = 1452570
+final-prefix time (s)   = 30.571701
+memory used (MB)        = 4.511719
+C-consistency           = 2
+cumulative consistency  = 2
+initial changes         = 1
+all-prefix queries      = 1452570
+all-prefix time (s)     = 30.571701
+q (ATKC)                = 3
+J (ATKC, lanes=J+1)     = 5
+N used (ATKC)           = 10
+lane restarts           = 2
+successful exchanges    = 5
+CSV appended to         = facebook_rkcl_atkc.csv
+[ATKC] B=100 delta=0.33 elapsed=30s
+
+Done. Results appended to facebook_rkcl_atkc.csv
