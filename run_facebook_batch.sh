@@ -37,7 +37,7 @@ set -u
 
 BIN=./ic
 COST_LOW=fb_cost1020.bin    # delta = 0.1
-COST_HIGH=fb_cost5060.bin   # delta = 0.33
+COST_HIGH=fb_cost4860.bin   # delta = 0.33 (cost floor 48 < B_min 50, tránh crash "no feasible element")
 CSV=facebook_rkcl_atkc.csv
 
 B_VALUES="50 60 70 80 90 100"
