@@ -169,9 +169,11 @@ int main(
     double atkc_eps   = 0.5;   // used by ATKC (Algorithm 4, Line 1)
     std::uint64_t atkc_chase_cap     = 0;  // 0 = theoretical N
     std::uint64_t atkc_max_scan_iter = 0;  // 0 = unlimited candidate scan
+    std::uint64_t atkc_aug_scan_cap  = 0;  // 0 = unlimited augmentation scan
 
     double rkcl_delta = 0.0;   // used by RKCL (Algorithm 2, Line 1). 0 = auto-detect.
     std::uint64_t rkcl_chase_cap = 0;      // 0 = theoretical N
+    std::uint64_t rkcl_scan_cap = 0;       // 0 = scan all (theoretical)
     bool rkcl_strict_granularity = true;
 
     double B_abs = -1.0;       // absolute budget; overrides B_factor*total_cost when > 0.
@@ -291,6 +293,24 @@ int main(
                     std::strtoull(
                         need_next(
                             "--active_n"),
+                        nullptr,
+                        10));
+        }
+        else if (tok == "--scan_cap") {
+            rkcl_scan_cap =
+                static_cast<std::uint64_t>(
+                    std::strtoull(
+                        need_next(
+                            "--scan_cap"),
+                        nullptr,
+                        10));
+        }
+        else if (tok == "--aug_scan_cap") {
+            atkc_aug_scan_cap =
+                static_cast<std::uint64_t>(
+                    std::strtoull(
+                        need_next(
+                            "--aug_scan_cap"),
                         nullptr,
                         10));
         }
@@ -628,6 +648,7 @@ int main(
         params.eps   = atkc_eps;
         params.chase_cap = atkc_chase_cap;
         params.max_x_scan_per_iter = atkc_max_scan_iter;
+        params.aug_scan_cap = atkc_aug_scan_cap;
 
         if (compute_consistency) {
             const algs::ATKCConsistencyStats stats =
@@ -674,6 +695,7 @@ int main(
         algs::RKCLParams params;
         params.delta = rkcl_delta;
         params.chase_cap = rkcl_chase_cap;
+        params.scan_cap = rkcl_scan_cap;
         params.strict_granularity = rkcl_strict_granularity;
 
         if (compute_consistency) {

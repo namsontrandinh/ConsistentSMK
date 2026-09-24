@@ -100,6 +100,15 @@ struct ATKCParams {
     double eps   = 0.5;
 
     std::uint64_t max_x_scan_per_iter = 0;
+
+    // Practical deviation for Algorithm 4 Lines 27-29 (one-element
+    // augmentation), which the manuscript specifies as an unbounded
+    // scan of Vt \ Sj,t at EVERY lane, EVERY timestep -> O(active_n)
+    // per lane per timestep, O(active_n^2 * lanes) overall.
+    // 0 = scan every candidate (theoretical).
+    // > 0 = scan only the this many most-recently-arrived candidates
+    // each augmentation pass. Not certified by the theorem when capped.
+    std::uint64_t aug_scan_cap = 0;
     std::uint64_t chase_cap           = 0;
 };
 
@@ -519,21 +528,36 @@ inline ATKCConsistencyStats run_ATKC_consistency_prefix(
                 cGj[j] = cS;
 
                 // ---- Lines 27-29: one-element augmentation ----
-                for (node_id x = 0; x <= et; ++x) {
-                    if (Sj[j][x]) continue;
+                {
+                    const bool aug_capped = (user_params.aug_scan_cap > 0);
+                    const std::size_t total_candidates =
+                        static_cast<std::size_t>(et) + 1;
+                    const std::size_t aug_limit =
+                        aug_capped
+                            ? std::min<std::size_t>(user_params.aug_scan_cap, total_candidates)
+                            : total_candidates;
 
-                    const double cx = atkc_node_cost(g, x);
-                    if (!(cx > 0.0) || cSj[j] + cx > B + 1e-9) continue;
+                    for (std::size_t s = 0; s < aug_limit; ++s) {
+                        const node_id x =
+                            aug_capped
+                                ? static_cast<node_id>(total_candidates - 1 - s)
+                                : static_cast<node_id>(s);
 
-                    const double gain = subm::sfunc_marginal(g, Sj[j], x, fSj[j]);
-                    ++stats.total_queries;
+                        if (Sj[j][x]) continue;
 
-                    const double candidate_value = fSj[j] + gain;
-                    if (candidate_value > fGj[j] + 1e-12) {
-                        Gj[j] = Sj[j];
-                        Gj[j][x] = 1;
-                        fGj[j] = candidate_value;
-                        cGj[j] = cSj[j] + cx;
+                        const double cx = atkc_node_cost(g, x);
+                        if (!(cx > 0.0) || cSj[j] + cx > B + 1e-9) continue;
+
+                        const double gain = subm::sfunc_marginal(g, Sj[j], x, fSj[j]);
+                        ++stats.total_queries;
+
+                        const double candidate_value = fSj[j] + gain;
+                        if (candidate_value > fGj[j] + 1e-12) {
+                            Gj[j] = Sj[j];
+                            Gj[j][x] = 1;
+                            fGj[j] = candidate_value;
+                            cGj[j] = cSj[j] + cx;
+                        }
                     }
                 }
             }

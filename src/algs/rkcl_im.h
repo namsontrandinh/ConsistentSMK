@@ -66,6 +66,14 @@ struct RKCLParams {
     double delta = 0.0;
     std::uint64_t chase_cap = 0;
     bool strict_granularity = true;
+
+    // Practical deviation (same spirit as chase_cap): 0 = scan every
+    // candidate in Vt \ S each attempt (theoretical, but O(active_n)
+    // per timestep in the worst case, hence O(active_n^2) overall).
+    // > 0 = stop after this many candidates have been TRIED (not
+    // necessarily accepted) in a single search. Not certified by the
+    // theorem when capped.
+    std::uint64_t scan_cap = 0;
 };
 
 // -----------------------------------------------------
@@ -82,6 +90,9 @@ struct RKCLDerivedParams {
     std::uint64_t used_N = 0;
 
     std::uint64_t theoretical_C = 0;
+
+    std::uint64_t scan_cap = 0;
+    bool scan_was_capped = false;
 
     bool chase_was_capped = false;
 };
@@ -386,6 +397,9 @@ rkcl_derive_params(
             true;
     }
 
+    out.scan_cap = p.scan_cap;
+    out.scan_was_capped = (p.scan_cap > 0);
+
     // The manuscript proves C <= N(q+1)
     // for the uncapped theoretical run.
     if (out.theoretical_N >
@@ -674,10 +688,29 @@ rkcl_find_improving_move(
             active_n,
             g.n);
 
-    for (std::size_t idx = 0;
-         idx < active_n;
-         ++idx)
+    // Theoretical (uncapped): scan Vt in arrival order, 0..active_n-1.
+    // Capped (practical): scan the most recently arrived candidates
+    // first, since older elements have already had many prior chances
+    // to be picked and the newly arrived one is what triggered this
+    // timestep's repair check. Not certified by the theorem when capped.
+    const bool capped =
+        (params.scan_cap > 0);
+
+    const std::size_t scan_limit =
+        capped
+            ? std::min<std::size_t>(
+                  params.scan_cap,
+                  active_n)
+            : active_n;
+
+    for (std::size_t s = 0;
+         s < scan_limit;
+         ++s)
     {
+        const std::size_t idx =
+            capped
+                ? (active_n - 1 - s)
+                : s;
         if (S[idx]) {
             continue;
         }
