@@ -23,6 +23,7 @@
 #include "algs/edl.h"
 #include "algs/atkc.h"
 #include "algs/rkcl_im.h"
+#include "algs/multistream.h"
 
 static long getPeakRSS_KB() {
     struct rusage r;
@@ -176,6 +177,9 @@ int main(
     std::uint64_t rkcl_scan_cap = 0;       // 0 = scan all (theoretical)
     bool rkcl_strict_granularity = true;
 
+    double ms_eps = 0.1;       // used by MultiStream (window parameter derivation)
+    int ms_h = 0;              // 0 = auto (multistream_default_h(eps))
+
     double B_abs = -1.0;       // absolute budget; overrides B_factor*total_cost when > 0.
     std::size_t active_n_override = 0; // 0 = use full graph (g.n)
 
@@ -314,6 +318,19 @@ int main(
                         nullptr,
                         10));
         }
+        else if (tok == "--ms_eps") {
+            ms_eps =
+                std::strtod(
+                    need_next(
+                        "--ms_eps"),
+                    nullptr);
+        }
+        else if (tok == "--ms_h") {
+            ms_h =
+                std::atoi(
+                    need_next(
+                        "--ms_h"));
+        }
         else if (tok == "--max_scan") {
             atkc_max_scan_iter =
                 std::strtoull(
@@ -379,13 +396,25 @@ int main(
     const bool is_edl  = (algo_lc == "edl");
     const bool is_atkc = (algo_lc == "atkc");
     const bool is_rkcl = (algo_lc == "rkcl");
+    const bool is_multistream = (algo_lc == "multistream" || algo_lc == "ms");
 
-    if (!is_edl && !is_atkc && !is_rkcl) {
+    if (!is_edl && !is_atkc && !is_rkcl && !is_multistream) {
         cerr
             << "Error: unsupported --alg '"
             << algo
-            << "'. Supported: edl, atkc, rkcl.\n";
+            << "'. Supported: edl, atkc, rkcl, multistream.\n";
         return 1;
+    }
+
+    if (is_multistream) {
+        if (!(ms_eps > 0.0 && ms_eps < 1.0)) {
+            cerr << "Error: --ms_eps must be in (0,1).\n";
+            return 1;
+        }
+        if (ms_h < 0) {
+            cerr << "Error: --ms_h must be >= 0 (0 = auto).\n";
+            return 1;
+        }
     }
 
     if (is_atkc) {
@@ -491,7 +520,7 @@ int main(
 
     cout
         << "========================================\n"
-        << (is_atkc ? "ATKC experiment\n" : (is_rkcl ? "RKCL experiment\n" : "EDL experiment\n"))
+        << (is_atkc ? "ATKC experiment\n" : (is_rkcl ? "RKCL experiment\n" : (is_multistream ? "MultiStream experiment\n" : "EDL experiment\n")))
         << "========================================\n"
         << "graph                  = "
         << graph_file
@@ -556,6 +585,15 @@ int main(
             << rkcl_chase_cap
             << "\n";
     }
+    if (is_multistream) {
+        cout
+            << "ms_eps                 = "
+            << ms_eps
+            << "\n"
+            << "ms_h (0=auto)          = "
+            << ms_h
+            << "\n";
+    }
 
     cout
         << "KIC_SEED               = "
@@ -602,6 +640,10 @@ int main(
     std::uint64_t rkcl_N_param = 0;
     std::uint64_t rkcl_total_restarts = 0;
     std::uint64_t rkcl_total_successful_exchanges = 0;
+
+    int ms_h_used = 0;
+    std::uint64_t ms_max_symdiff = 0;
+    std::uint64_t ms_cumulative_symdiff = 0;
 
     const std::size_t active_n =
         (active_n_override > 0)
@@ -742,6 +784,51 @@ int main(
                     active_n);
         }
     }
+    else if (is_multistream) {
+        ms_h_used =
+            (ms_h > 0)
+                ? ms_h
+                : algs::multistream_default_h(ms_eps);
+
+        if (compute_consistency) {
+            const algs::MultiStreamConsistencyStats stats =
+                algs::run_MultiStream_consistency(
+                    g,
+                    B,
+                    ms_eps,
+                    ms_h_used);
+
+            res =
+                stats.final_result;
+
+            C =
+                stats.C;
+
+            cumulative_consistency =
+                stats.cumulative_consistency;
+
+            initial_changes =
+                stats.initial_changes;
+
+            consistency_queries =
+                stats.total_queries;
+
+            consistency_time_sec =
+                stats.total_time_sec;
+
+            ms_max_symdiff = stats.max_symmetric_difference;
+            ms_cumulative_symdiff = stats.cumulative_symmetric_difference;
+        }
+        else {
+            res =
+                algs::run_MultiStream_prefix(
+                    g,
+                    B,
+                    ms_eps,
+                    ms_h_used,
+                    active_n);
+        }
+    }
 
     const long peak_after_kb =
         getPeakRSS_KB();
@@ -876,6 +963,18 @@ int main(
                 << rkcl_total_successful_exchanges
                 << "\n";
         }
+        if (is_multistream) {
+            cout
+                << "h used (MultiStream)    = "
+                << ms_h_used
+                << "\n"
+                << "max symdiff             = "
+                << ms_max_symdiff
+                << "\n"
+                << "cumulative symdiff      = "
+                << ms_cumulative_symdiff
+                << "\n";
+        }
     }
 
     if (!csv_path.empty()) {
@@ -892,7 +991,8 @@ int main(
             "atkc_lane_restarts,atkc_successful_exchanges,"
             "rkcl_delta_used,rkcl_mu,rkcl_lambda,rkcl_gamma,"
             "rkcl_q,rkcl_N,rkcl_chase_cap,"
-            "rkcl_restarts,rkcl_successful_exchanges";
+            "rkcl_restarts,rkcl_successful_exchanges,"
+            "ms_eps,ms_h,ms_max_symdiff,ms_cumulative_symdiff";
 
         ostringstream row;
 
@@ -993,7 +1093,15 @@ int main(
             << ","
             << rkcl_total_restarts
             << ","
-            << rkcl_total_successful_exchanges;
+            << rkcl_total_successful_exchanges
+            << ","
+            << ms_eps
+            << ","
+            << ms_h_used
+            << ","
+            << ms_max_symdiff
+            << ","
+            << ms_cumulative_symdiff;
 
         append_csv_row(
             csv_path,
